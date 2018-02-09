@@ -8,15 +8,15 @@
         </ul>
         <el-form ref="form" :model="form" label-width="180px">
             <el-form-item label="Insert new task">
-                <el-input class="input-class" v-model="form.nuevatarea.txt" placeholder="..task description" size="40" ></el-input>
+                <el-input class="input-class" v-model="form.nuevatarea.description" placeholder="..task description" size="40" ></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="anadir">Insert</el-button>
                 <el-button @click="eliminarTodas">Delete</el-button>
             </el-form-item>
         </el-form>
-        <el-button @click="callRestService">Rest call!</el-button>
-        {{restresponse}}
+        <el-button @click="listTareas">Rest call!</el-button>
+        <pre class="prettyprint" id="quine">{{restresponse}}</pre>
     </div>
 </template>
 <script>
@@ -29,16 +29,10 @@ import axios from 'axios'
          return {
              titulo:"To-do list",
              form:{
-                 nuevatarea:{'txt':''}
+                 nuevatarea:{'description':''}
              },
-             tareas:
-                 [
-                     {'txt':'tarea1',checked:false},
-                     {'txt':'tarea2',checked:false},
-                     {'txt':'tarea3',checked:false},
-                     {'txt':'tarea4',checked:false},
-                     {'txt':'tarea5',checked:false}
-                 ],
+             tareas:""                
+             ,
             restresponse:"",
             errors:[]
              
@@ -46,8 +40,8 @@ import axios from 'axios'
      },
      methods:{
          anadir(){
-             var tarea = {'txt':this.$data.form.nuevatarea.txt};
-             if(tarea.txt!=""){
+             var tarea = {'description':this.$data.form.nuevatarea.description};
+             if(tarea.description!=""){
                  tarea.checked=false;
                  this.$data.tareas.push(tarea);
                 alert("Task successfully saved!");
@@ -66,7 +60,8 @@ import axios from 'axios'
          eliminarTarea(tarea){
              this.$data.tareas.splice(this.$data.tareas.indexOf(tarea), 1);
          },
-         callRestService () {
+         listTareas() {
+             console.log("listTareas");
             axios.get("http://localhost:8080/rest/tasks")
                 .then(restresponse => {
                 // JSON responses are automatically parsed.
@@ -76,10 +71,17 @@ import axios from 'axios'
                 .catch(e => {
                 this.errors.push(e)
                 })
-            }
+            },
+        mounted: function () {
+            this.$nextTick(function () {
+                this.listTareas();
+            })
+        }
      }
      
+     
  }   
+ 
 </script>
 
 <style>
@@ -95,4 +97,14 @@ import axios from 'axios'
  .input-class{
      width:200px;
  }
+ .operative {
+    font-weight: bold;
+    border: 1px solid yellow;
+}
+pre.prettyprint {
+    color:white;
+}
+#quine {
+    border: 4px solid #88c;
+}
 </style>
